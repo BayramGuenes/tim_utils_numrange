@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func checkDatabaseAvailable(iConnection string, iSchema string) (eAvailable bool, eException ExceptionStruct) {

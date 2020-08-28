@@ -1,5 +1,7 @@
 package tim_utils_numrange
 
+import _ "github.com/go-sql-driver/mysql"
+
 func NewManager(iDBServerAdress, iDBServerPort, iDBUsrPwd, iDBSchema string) (eNr NumRange) {
 	lONr := NumRange{}
 	lONr.DBServerAdress = iDBServerAdress
