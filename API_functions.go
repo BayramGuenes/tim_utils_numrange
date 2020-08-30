@@ -69,6 +69,17 @@ func (nr NumRange) CreateNumRange(iTabname string, iNumRangeStartInt int64) (eOu
 func (nr NumRange) DisplayNumRange(iTabname string) (eOutput OutParamDisplayNumRange) {
 	eOutput = OutParamDisplayNumRange{}
 
+	lfExistNR, lException := nr.ExistsNumRange(nr.DBSchemaName, iTabname)
+	if !lfExistNR {
+		eOutput.Exception.Occured = true
+		eOutput.Exception.ErrTxt = "Nurrmernkreis existiert nicht!"
+		return
+	}
+	eOutput.Exception = lException
+	if eOutput.Exception.Occured {
+		return
+	}
+
 	lLastId, lException := getLastIDRangeOffsID(nr.DBConnection, nr.DBSchemaName, iTabname)
 	eOutput.Exception = lException
 	if eOutput.Exception.Occured {
@@ -118,6 +129,17 @@ func (nr NumRange) ExistsNumRange(iSchema, iTabname string) (eExists bool, eExce
 
 func (nr NumRange) GetNextNumber(iTabname string) (eOutput OutParamGetNextNumber) {
 	eOutput = OutParamGetNextNumber{}
+
+	lfExistNR, lException := nr.ExistsNumRange(nr.DBSchemaName, iTabname)
+	if !lfExistNR {
+		eOutput.Exception.Occured = true
+		eOutput.Exception.ErrTxt = "Nurrmernkreis existiert nicht!"
+		return
+	}
+	eOutput.Exception = lException
+	if eOutput.Exception.Occured {
+		return
+	}
 	lStartId, lException := getStartIDRangeStartID(nr.DBConnection, nr.DBSchemaName, iTabname)
 	eOutput.Exception = lException
 	if eOutput.Exception.Occured {
