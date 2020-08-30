@@ -28,6 +28,46 @@ func checkDatabaseAvailable(iConnection string, iSchema string) (eAvailable bool
 	db.Close()
 	return
 }
+
+func checkDBTableAvailable(iConnection string, iSchema string, iTable string) (eAvailable bool, eException ExceptionStruct) {
+	eAvailable = false
+	eException = ExceptionStruct{}
+	db, err := sql.Open("mysql", iConnection)
+	if err != nil {
+		eException.Occured = true
+		eException.ErrTxt = err.Error()
+		return
+	}
+
+	headerQuery := ` 
+	SELECT TABLE_NAME 
+	FROM information_schema.tables
+	WHERE table_schema =? 
+		AND table_name =?
+	LIMIT 1;   `
+
+	rows, err := db.Query(headerQuery, iSchema, iTable)
+	defer rows.Close()
+
+	var tabname string
+
+	for rows.Next() {
+
+		err := rows.Scan(&tabname)
+		if err != nil {
+			eException.Occured = true
+			eException.ErrTxt = err.Error()
+			return
+
+		}
+		eAvailable = true
+
+	}
+
+	db.Close()
+	return
+}
+
 func create_table(iConnection string, iSchema string, iTable string, iFields string) (eException ExceptionStruct) {
 	eException = ExceptionStruct{}
 

@@ -87,6 +87,35 @@ func (nr NumRange) DisplayNumRange(iTabname string) (eOutput OutParamDisplayNumR
 	return eOutput
 }
 
+func (nr NumRange) ExistsNumRange(iSchema, iTabname string) (eExists bool, eException ExceptionStruct) {
+	eExists = false
+	eException = ExceptionStruct{}
+
+	lTabname := iTabname + coTabsuffixRANGEOFFSID
+	lExists, lException := checkDBTableAvailable(nr.DBConnection, nr.DBSchemaName, lTabname)
+	eException = lException
+	if !lException.Occured && !eExists {
+		eException.Occured = true
+		eException.ErrTxt = "Table " + iTabname + " in Database(Schema) " + nr.DBSchemaName + " doesnot exist."
+		return
+	}
+
+	if !lExists {
+		return
+	}
+
+	lTabname = iTabname + coTabsuffixRANGESTRTID
+
+	eExists, lException = checkDBTableAvailable(nr.DBConnection, nr.DBSchemaName, lTabname)
+	eException = lException
+	if !lException.Occured && !eExists {
+		eException.Occured = true
+		eException.ErrTxt = "Table " + iTabname + " in Database(Schema) " + nr.DBSchemaName + " doesnot exist."
+		return
+	}
+	return
+}
+
 func (nr NumRange) GetNextNumber(iTabname string) (eOutput OutParamGetNextNumber) {
 	eOutput = OutParamGetNextNumber{}
 	lStartId, lException := getStartIDRangeStartID(nr.DBConnection, nr.DBSchemaName, iTabname)
