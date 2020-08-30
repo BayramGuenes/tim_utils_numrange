@@ -105,7 +105,7 @@ func (nr NumRange) ExistsNumRange(iSchema, iTabname string) (eExists bool, eExce
 	lTabname := iTabname + coTabsuffixRANGEOFFSID
 	lExists, lException := checkDBTableAvailable(nr.DBConnection, nr.DBSchemaName, lTabname)
 	eException = lException
-	if !lException.Occured && !eExists {
+	if !lException.Occured && !lExists {
 		eException.Occured = true
 		eException.ErrTxt = "Table " + iTabname + " in Database(Schema) " + nr.DBSchemaName + " doesnot exist."
 		return
