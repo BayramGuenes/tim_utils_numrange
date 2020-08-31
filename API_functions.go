@@ -69,6 +69,16 @@ func (nr NumRange) CreateNumRange(iTabname string, iNumRangeStartInt int64) (eOu
 func (nr NumRange) DisplayNumRange(iTabname string) (eOutput OutParamDisplayNumRange) {
 	eOutput = OutParamDisplayNumRange{}
 
+	// =======================checkDatabaseAvailable ==================== //
+
+	available, lException := checkDatabaseAvailable(nr.DBConnection, nr.DBSchemaName)
+	eOutput.Exception = lException
+	if !lException.Occured && !available {
+		eOutput.Exception.Occured = true
+		eOutput.Exception.ErrTxt = "Database(Schema) " + nr.DBSchemaName + " doesnot exist."
+		return
+	}
+
 	lfExistNR, lException := nr.ExistsNumRange(nr.DBSchemaName, iTabname)
 	if !lfExistNR {
 		eOutput.Exception.Occured = true
@@ -101,6 +111,14 @@ func (nr NumRange) DisplayNumRange(iTabname string) (eOutput OutParamDisplayNumR
 func (nr NumRange) ExistsNumRange(iSchema, iTabname string) (eExists bool, eException ExceptionStruct) {
 	eExists = false
 	eException = ExceptionStruct{}
+
+	available, lException := checkDatabaseAvailable(nr.DBConnection, nr.DBSchemaName)
+	eException = lException
+	if !lException.Occured && !available {
+		eException.Occured = true
+		eException.ErrTxt = "Database(Schema) " + nr.DBSchemaName + " doesnot exist."
+		return
+	}
 
 	lTabname := iTabname + coTabsuffixRANGEOFFSID
 	lExists, lException := checkDBTableAvailable(nr.DBConnection, nr.DBSchemaName, lTabname)
