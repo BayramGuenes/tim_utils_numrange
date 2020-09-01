@@ -2,7 +2,6 @@ package tim_utils_numrange
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -47,6 +46,12 @@ func checkDBTableAvailable(iConnection string, iSchema string, iTable string) (e
 	LIMIT 1;   `
 
 	rows, err := db.Query(headerQuery, iSchema, iTable)
+	if err != nil {
+		eException.Occured = true
+		eException.ErrTxt = err.Error()
+		return
+
+	}
 	defer rows.Close()
 
 	var tabname string
@@ -91,9 +96,12 @@ func create_table(iConnection string, iSchema string, iTable string, iFields str
 		}
 		_, err = db.Exec(statement)
 		if err != nil {
-			fmt.Println(err)
+			eException.ErrTxt = err.Error()
+			eException.Occured = true
+			return
+			//	fmt.Println(err)
 		}
-		fmt.Println(statement)
+		//fmt.Println(statement)
 	}
 	db.Close()
 	return

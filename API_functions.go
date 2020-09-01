@@ -69,20 +69,10 @@ func (nr NumRange) CreateNumRange(iTabname string, iNumRangeStartInt int64) (eOu
 func (nr NumRange) DisplayNumRange(iTabname string) (eOutput OutParamDisplayNumRange) {
 	eOutput = OutParamDisplayNumRange{}
 
-	// =======================checkDatabaseAvailable ==================== //
-
-	available, lException := checkDatabaseAvailable(nr.DBConnection, nr.DBSchemaName)
-	eOutput.Exception = lException
-	if !lException.Occured && !available {
-		eOutput.Exception.Occured = true
-		eOutput.Exception.ErrTxt = "Database(Schema) " + nr.DBSchemaName + " doesnot exist."
-		return
-	}
-
 	lfExistNR, lException := nr.ExistsNumRange(nr.DBSchemaName, iTabname)
 	if !lfExistNR {
 		eOutput.Exception.Occured = true
-		eOutput.Exception.ErrTxt = "Nurrmernkreis existiert nicht!"
+		eOutput.Exception.ErrTxt = lException.ErrTxt + " Nummernkreis existiert nicht!"
 		return
 	}
 	eOutput.Exception = lException
@@ -112,20 +102,12 @@ func (nr NumRange) ExistsNumRange(iSchema, iTabname string) (eExists bool, eExce
 	eExists = false
 	eException = ExceptionStruct{}
 
-	available, lException := checkDatabaseAvailable(nr.DBConnection, nr.DBSchemaName)
-	eException = lException
-	if !lException.Occured && !available {
-		eException.Occured = true
-		eException.ErrTxt = "Database(Schema) " + nr.DBSchemaName + " doesnot exist."
-		return
-	}
-
 	lTabname := iTabname + coTabsuffixRANGEOFFSID
 	lExists, lException := checkDBTableAvailable(nr.DBConnection, nr.DBSchemaName, lTabname)
 	eException = lException
 	if !lException.Occured && !lExists {
 		eException.Occured = true
-		eException.ErrTxt = "Table " + iTabname + " in Database(Schema) " + nr.DBSchemaName + " doesnot exist."
+		eException.ErrTxt = lException.ErrTxt + " Table " + iTabname + " in Database(Schema) " + nr.DBSchemaName + " doesnot exist."
 		return
 	}
 
@@ -139,7 +121,7 @@ func (nr NumRange) ExistsNumRange(iSchema, iTabname string) (eExists bool, eExce
 	eException = lException
 	if !lException.Occured && !eExists {
 		eException.Occured = true
-		eException.ErrTxt = "Table " + iTabname + " in Database(Schema) " + nr.DBSchemaName + " doesnot exist."
+		eException.ErrTxt = lException.ErrTxt + " Table " + iTabname + " in Database(Schema) " + nr.DBSchemaName + " doesnot exist."
 		return
 	}
 	return
@@ -151,7 +133,7 @@ func (nr NumRange) GetNextNumber(iTabname string) (eOutput OutParamGetNextNumber
 	lfExistNR, lException := nr.ExistsNumRange(nr.DBSchemaName, iTabname)
 	if !lfExistNR {
 		eOutput.Exception.Occured = true
-		eOutput.Exception.ErrTxt = "Nurrmernkreis existiert nicht!"
+		eOutput.Exception.ErrTxt = lException.ErrTxt + " Nurrmernkreis existiert nicht!"
 		return
 	}
 	eOutput.Exception = lException
